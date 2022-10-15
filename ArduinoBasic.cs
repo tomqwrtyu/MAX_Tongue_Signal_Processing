@@ -14,7 +14,7 @@ public class ArduinoBasic : MonoBehaviour {
 
     void Start () {
         if (port != "") {
-            arduinoStream = new SerialPort (port, 9600); //指定連接埠、鮑率並實例化SerialPort
+            arduinoStream = new SerialPort (port, 115200); //指定連接埠、鮑率並實例化SerialPort
             arduinoStream.ReadTimeout = 10;
             try {
                 arduinoStream.Open (); //開啟SerialPort連線
