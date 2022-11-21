@@ -1,6 +1,6 @@
 import serial  # 引用pySerial模組
 import numpy as np
-import unreal as ue
+#import unreal as ue
 from time import sleep
 from threading import Thread, Lock
 from collections import deque
@@ -10,6 +10,8 @@ COM_PORT = 'COM3'    # 指定通訊埠名稱
 NO_ARDUINO = False
 BAUD_RATE = 115200    # 設定傳輸速率
 SAMPLE_TIME = 1 / 500
+WINDOW_SIZE = 600
+model_path = 'LickenPark'
 class inference(Thread):
     def __init__(self, container, source, modelPath) -> None:
         super().__init__()
@@ -23,8 +25,12 @@ class inference(Thread):
             try:
                 assert type(data[0]) == np.ndarray
                 inputData = np.asarray(data)
-                res = self._model.predict(inputData)
-                print(res)
+                res = self._model.predict(inputData,
+                                          verbose = False)
+                if res[0] == 1:
+                    print("Licking.")
+                else:
+                    print("Not licking.")
                 #self._container.peek()
             except:
                 continue #it's a None
@@ -54,8 +60,10 @@ class container():
             
         self._lock.acquire()
         try:
-            ret = np.asarray[self._dataA, self._dataB, self._dataC]
-            return ret
+            ret = np.asarray(self._dataA)[:, np.newaxis]
+            ret = np.concatenate([ret, np.asarray(self._dataB)[:, np.newaxis]], axis=1)
+            ret = np.concatenate([ret, np.asarray(self._dataC)[:, np.newaxis]], axis=1)
+            return ret[np.newaxis, :]
         finally:
             self._lock.release()
             
@@ -104,13 +112,12 @@ class generator():
                 
 
 def main():
-    temp_container = container(int(1200))
-    model_path = './model/sin'
+    temp_container = container(WINDOW_SIZE)
     if NO_ARDUINO:
         arduino = generator(temp_container)
     else:
         arduino = reciever(temp_container, COM_PORT, BAUD_RATE)
-    test = ue.Actor()
+    #test = ue.Actor()
     deepNN = inference(temp_container, arduino, model_path)
     arduino.start()
     deepNN.start()

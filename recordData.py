@@ -3,10 +3,10 @@ import numpy as np
 from time import sleep
 
 COM_PORT = 'COM3'    # 指定通訊埠名稱
-NO_ARDUINO = True
-RECORDTYPE = 'coswave'
+NO_ARDUINO = False
+RECORDTYPE = 'lick2'
 SAMPLE_TIME = 1 / 500
-RECORDTIME = 15 #seconds
+RECORDTIME = 20 #seconds
 BAUD_RATE = 115200    # 設定傳輸速率
 
 class generator():
@@ -39,24 +39,26 @@ def main():
     firstTime = True
     try:
         i = 0
-        while ser.in_waiting and i < maxTime:  # 若收到序列資料…
-            data_raw = ser.readline()  # 讀取一行
-            rcv = data_raw.decode(errors='surrogateescape').rstrip().split(",") # 用預設的UTF-8解碼
-            try:
-                new = np.array(list(map(float, rcv)))
-                if firstTime:
-                    firstTime = False
-                    record = new[:, np.newaxis]
-                else:
-                    record = np.concatenate([record, new[:, np.newaxis]], axis=1)
-            except KeyboardInterrupt:
-                break
-            except:
-                pass
-            finally:
-                i += 1
+        while i < maxTime:
+            while ser.in_waiting:  # 若收到序列資料…
+                data_raw = ser.readline()  # 讀取一行
+                rcv = data_raw.decode(errors='surrogateescape').rstrip().split(",") # 用預設的UTF-8解碼
+                try:
+                    new = np.array(list(map(float, rcv)))
+                    if firstTime:
+                        firstTime = False
+                        record = new[np.newaxis, :]
+                        print(record)
+                    else:
+                        record = np.concatenate([record, new[np.newaxis, :]], axis=0)
+                except KeyboardInterrupt:
+                    break
+                except:
+                    pass
+                finally:
+                    i += 1
             
-        print("Data collection finished.")
+        print("Data collection finished.", record.shape)
 
     except KeyboardInterrupt:
         np.save(filepath, record)
