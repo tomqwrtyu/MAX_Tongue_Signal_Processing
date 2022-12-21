@@ -31,7 +31,7 @@ int humFreq = NOTCH_FREQ_60HZ;
 // put on the sensors, and release your muscles;
 // wait a few seconds, and select the max value as the threshold;
 // any value under threshold will be set to zero
-static int Threshold = pow(10, 2);
+static int Threshold = pow(7, 2);
 
 unsigned long timeStamp;
 unsigned long timeBudget;
@@ -73,7 +73,7 @@ void loop() {
     DataAfterFilterB = (pow(DataAfterFilterB, 2) > Threshold) ? DataAfterFilterB : 0;
     DataAfterFilterC = (pow(DataAfterFilterC, 2) > Threshold) ? DataAfterFilterC : 0;
 
-    //timeStamp = micros() - timeStamp;
+    timeStamp = micros() - timeStamp;
     if (TIMING_DEBUG) {
         // Serial.print("Read Data: "); Serial.println(Value);
         // Serial.print("Filtered Data: ");Serial.println(DataAfterFilter);
@@ -83,7 +83,7 @@ void loop() {
         Serial.print(DataAfterFilterB);
         Serial.print(",");
         Serial.println(DataAfterFilterC);
-        //Serial.print("Filters cost time: "); Serial.println(timeStamp);
+        Serial.print("Filters cost time: "); Serial.println(timeStamp);
         // the filter cost average around 520 us
     }
 
