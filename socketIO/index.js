@@ -18,7 +18,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ArduinoSignal', (msg) => {
-        io.emit('SignalInput', msg);
+        io.emit('chat message', 'Signal: ' + msg);
     });
 
     socket.on('disconnect', () => {

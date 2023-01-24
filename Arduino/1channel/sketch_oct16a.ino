@@ -9,13 +9,9 @@
 
 #define TIMING_DEBUG 1
 
-#define SensorInputPinA A0 // input pin number
-#define SensorInputPinB A7 // input pin number
-#define SensorInputPinC A14 // input pin number
+#define SensorInputPin A7 // input pin number
 
-EMGFilters filterA;
-EMGFilters filterB;
-EMGFilters filterC;
+EMGFilters filter;
 // discrete filters must works with fixed sample frequence
 // our emg filter only support "SAMPLE_FREQ_500HZ" or "SAMPLE_FREQ_1000HZ"
 // other sampleRate inputs will bypass all the EMG_FILTER
@@ -31,7 +27,7 @@ int humFreq = NOTCH_FREQ_60HZ;
 // put on the sensors, and release your muscles;
 // wait a few seconds, and select the max value as the threshold;
 // any value under threshold will be set to zero
-static int Threshold = pow(10, 2);
+static int Threshold = sq(10);
 
 unsigned long timeStamp;
 unsigned long timeBudget;
@@ -40,16 +36,15 @@ double output;
 
 void setup() {
     /* add setup code here */
-    filterA.init(sampleRate, humFreq, true, true, true);
-    filterB.init(sampleRate, humFreq, true, true, true);
-    filterC.init(sampleRate, humFreq, true, true, true);
-
+    filter.init(sampleRate, humFreq, true, true, true);
+    analogReference(EXTERNAL);
     // open serial
     Serial.begin(115200);
 
     // setup for time cost measure
     // using micros()
     timeBudget = 1e6 / sampleRate;
+    initTime = millis();
     // micros will overflow and auto return to zero every 70 minutes
 }
 
@@ -59,30 +54,21 @@ void loop() {
     // the time cost should be measured each loop
     /*------------start here-------------------*/
     timeStamp = micros();
-    int ValueA = analogRead(SensorInputPinA);
-    int ValueB = analogRead(SensorInputPinB);
-    int ValueC = analogRead(SensorInputPinC);
+    int Value = analogRead(SensorInputPin);
 
     // filter processing
-    int DataAfterFilterA = filterA.update(ValueA);
-    int DataAfterFilterB = filterB.update(ValueB);
-    int DataAfterFilterC = filterC.update(ValueC);
+    int DataAfterFilter = filter.update(Value);
     
     // // any value under threshold will be set to zero
-    DataAfterFilterA = (pow(DataAfterFilterA, 2) > Threshold) ? DataAfterFilterA : 0;
-    DataAfterFilterB = (pow(DataAfterFilterB, 2) > Threshold) ? DataAfterFilterB : 0;
-    DataAfterFilterC = (pow(DataAfterFilterC, 2) > Threshold) ? DataAfterFilterC : 0;
-
+    DataAfterFilter = (sq(DataAfterFilter) > Threshold) ? (DataAfterFilter) : 0;
     timeStamp = micros() - timeStamp;
     if (TIMING_DEBUG) {
         // Serial.print("Read Data: "); Serial.println(Value);
         // Serial.print("Filtered Data: ");Serial.println(DataAfterFilter);
         // Serial.print("Squared Data: ");
-        Serial.print(DataAfterFilterA);
+        Serial.print(millis() - initTime);
         Serial.print(",");
-        Serial.print(DataAfterFilterB);
-        Serial.print(",");
-        Serial.println(DataAfterFilterC);
+        Serial.println(DataAfterFilter);
         // Serial.print("Filters cost time: "); Serial.println(timeStamp);
         // the filter cost average around 520 us
     }
@@ -90,7 +76,7 @@ void loop() {
     /*------------end here---------------------*/
     // if less than timeBudget, then you still have (timeBudget - timeStamp) to
     // do your work
-    delayMicroseconds(170);
+    delayMicroseconds(1280);
     // if more than timeBudget, the sample rate need to reduce to
     // SAMPLE_FREQ_500HZ
 }
