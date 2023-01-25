@@ -31,7 +31,7 @@ int humFreq = NOTCH_FREQ_60HZ;
 // put on the sensors, and release your muscles;
 // wait a few seconds, and select the max value as the threshold;
 // any value under threshold will be set to zero
-static int Threshold = pow(10, 2);
+static int Threshold = pow(25, 2);
 
 unsigned long timeStamp;
 unsigned long timeBudget;
@@ -43,6 +43,7 @@ void setup() {
     filterA.init(sampleRate, humFreq, true, true, true);
     filterB.init(sampleRate, humFreq, true, true, true);
     filterC.init(sampleRate, humFreq, true, true, true);
+    analogReference(EXTERNAL);
 
     // open serial
     Serial.begin(115200);
@@ -59,6 +60,7 @@ void loop() {
     // the time cost should be measured each loop
     /*------------start here-------------------*/
     timeStamp = micros();
+    
     int ValueA = analogRead(SensorInputPinA);
     int ValueB = analogRead(SensorInputPinB);
     int ValueC = analogRead(SensorInputPinC);
@@ -72,7 +74,6 @@ void loop() {
     DataAfterFilterA = (pow(DataAfterFilterA, 2) > Threshold) ? DataAfterFilterA : 0;
     DataAfterFilterB = (pow(DataAfterFilterB, 2) > Threshold) ? DataAfterFilterB : 0;
     DataAfterFilterC = (pow(DataAfterFilterC, 2) > Threshold) ? DataAfterFilterC : 0;
-
     timeStamp = micros() - timeStamp;
     if (TIMING_DEBUG) {
         // Serial.print("Read Data: "); Serial.println(Value);
@@ -86,11 +87,10 @@ void loop() {
         // Serial.print("Filters cost time: "); Serial.println(timeStamp);
         // the filter cost average around 520 us
     }
-
+    delayMicroseconds(timeBudget - timeStamp - 10);
     /*------------end here---------------------*/
     // if less than timeBudget, then you still have (timeBudget - timeStamp) to
     // do your work
-    delayMicroseconds(170);
     // if more than timeBudget, the sample rate need to reduce to
     // SAMPLE_FREQ_500HZ
 }
