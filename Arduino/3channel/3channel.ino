@@ -71,9 +71,9 @@ void loop() {
     int DataAfterFilterC = filterC.update(ValueC);
     
     // // any value under threshold will be set to zero
-    DataAfterFilterA = (pow(DataAfterFilterA, 2) > Threshold) ? DataAfterFilterA : 0;
-    DataAfterFilterB = (pow(DataAfterFilterB, 2) > Threshold) ? DataAfterFilterB : 0;
-    DataAfterFilterC = (pow(DataAfterFilterC, 2) > Threshold) ? DataAfterFilterC : 0;
+    // DataAfterFilterA = (pow(DataAfterFilterA, 2) > Threshold) ? DataAfterFilterA : 0;
+    // DataAfterFilterB = (pow(DataAfterFilterB, 2) > Threshold) ? DataAfterFilterB : 0;
+    // DataAfterFilterC = (pow(DataAfterFilterC, 2) > Threshold) ? DataAfterFilterC : 0;
     timeStamp = micros() - timeStamp;
     if (TIMING_DEBUG) {
         // Serial.print("Read Data: "); Serial.println(Value);
