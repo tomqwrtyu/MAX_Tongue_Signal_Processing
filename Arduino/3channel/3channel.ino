@@ -31,7 +31,7 @@ int humFreq = NOTCH_FREQ_60HZ;
 // put on the sensors, and release your muscles;
 // wait a few seconds, and select the max value as the threshold;
 // any value under threshold will be set to zero
-static int Threshold = pow(25, 2);
+static int Threshold = pow(7, 2);
 
 unsigned long timeStamp;
 unsigned long timeBudget;
