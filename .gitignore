@@ -1,3 +1,4 @@
 .ipynb_checkpoints/
 Arduino IDE/
 backup/
+__pycache__/
