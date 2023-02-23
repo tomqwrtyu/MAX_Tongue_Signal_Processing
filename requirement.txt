@@ -1,0 +1,8 @@
+emd==0.5.5
+keyboard==0.13.5
+scikit-learn==1.1.2
+tensorflow==2.10.0
+tensorflow-gpu==2.10.1
+plotly==5.10.0
+pyserial==3.5
+python-socketio==5.7.2
