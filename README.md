@@ -13,4 +13,6 @@ as the instructions in https://socket.io/get-started/chat.
 <br> `npm install socket.io`
 <br>
 ### Usage
-ouob
+<br>
+<br> Open socketIO server with `node index.js`
+<br>
