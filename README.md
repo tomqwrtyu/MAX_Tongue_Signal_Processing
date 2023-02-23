@@ -13,6 +13,7 @@ as the instructions in https://socket.io/get-started/chat.
 <br> `npm install socket.io`
 <br>
 ### Usage
-<br>
-<br> Open socketIO server with `node index.js`
-<br>
+*Open socketIO server with
+<br> `node index.js` <br>
+*Run inference.py for inference request, check config.
+<br> `python inference.py` <br>
