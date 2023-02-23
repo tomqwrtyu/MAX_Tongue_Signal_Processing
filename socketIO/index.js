@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         if (user.has(uid)){
             user.delete(uid);
-            io.emit('rmWhiteList', {'uid': id});
+            io.emit('rmWhiteList', uid);
         }
         console.log('user disconnected');
     });

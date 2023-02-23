@@ -1,6 +1,7 @@
 import argparse
 import config
 import socketio
+import os
 import numpy as np
 import tensorflow as tf
 from threading import Lock
@@ -54,6 +55,7 @@ class inference():
         self.__white_list.pop(uid)
         
     def run(self):
+        os.system('cls')
         print("Listening requests.")
         self.__sio.on(config.REQ_RECEIVE_CHANNEL, self.__receiveSignal)
         try:
@@ -71,7 +73,7 @@ class inference():
                     
                     candidateIdx = np.argmax(res) + 1 if res[np.argmax(res)] > config.BELIEF_THRESHOLD else 0
                     self.__sio.emit(config.RESULT_CHANNEL, {'uid': clientID, 'action': config.KEY_CLASS[candidateIdx]})
-                    print("ID: {}-{: 5d}, Res: {}, Spend time: {:.3f}".format(clientID, ser, config.KEY_CLASS[candidateIdx], time() - clock).ljust(MAXCHARLEN + config.ID_LEN + 36), end='\r')
+                    print("ID: {}-{: 5d}, Spend time: {:.3f}s, Act: {}".format(clientID, ser, time() - clock, config.KEY_CLASS[candidateIdx]).ljust(MAXCHARLEN + config.ID_LEN + 37), end='\r')
                 
                 except KeyboardInterrupt:
                     break
@@ -80,10 +82,10 @@ class inference():
                     pass
                 
         except KeyboardInterrupt:
-            self.__sio.disconnect()
-            clear_session()
+            pass
             
         finally:
+            os.system('cls')
             self.__sio.disconnect()
             clear_session()
 
