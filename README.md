@@ -15,5 +15,5 @@ as the instructions in https://socket.io/get-started/chat.
 ### Usage
 * Open socketIO server with
 <br> `node index.js` <br>
-* Run inference.py for inference request, check config.
+* Run inference.py for inference request, check config.py for some settings.
 <br> `python inference.py` <br>
