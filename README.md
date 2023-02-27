@@ -1,5 +1,7 @@
 # MAX-Tongue-repo
 ### Prerequisite
+#### CUDA & cuDNN
+CUDA = 11.7, cuDNN = 8.2.1
 #### Python
 This project is developed in Python 3.10.7.
 <br>
