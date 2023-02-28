@@ -1,5 +1,5 @@
 # MAX-Tongue-repo
-### Prerequisite
+### Prerequisite [Local inference server]
 #### CUDA & cuDNN
 CUDA = 11.7, cuDNN = 8.2.1
 #### Python
