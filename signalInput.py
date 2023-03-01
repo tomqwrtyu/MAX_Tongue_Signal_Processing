@@ -124,7 +124,6 @@ class remoteReceiver():
         self.__sio.on('r' + id, self.__getData)
     
     def __getData(self, rcv):
-        print(rcv)
         try:
             self.__container.append(rcv.split(','))
         except:
@@ -161,6 +160,7 @@ class remoteReceiver():
                         count += 1
                         self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
                         print("ID: {} send {: 5d}.".format(self.__clientID, count).ljust(22), end='\r')
+                        self.__container.popleft()
                         
                 except KeyboardInterrupt:
                     escape = True

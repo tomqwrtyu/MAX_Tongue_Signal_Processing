@@ -3,7 +3,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
 
-let ip = '192.168.1.37';
+let ip = '127.0.0.1'//'192.168.1.37';
 let ID_LEN = 6;
 let user = new Map();
 let availableID = [];
@@ -17,6 +17,7 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log('a user connected');
     let uid = null;
+    let emitUID = null;
 
     socket.on('chat message', (msg) => {
         io.emit('chat message', msg);
@@ -34,6 +35,7 @@ io.on('connection', (socket) => {
     socket.on('signalRegister', () => {
         if (availableID.length > 0){
             id = availableID.pop();
+            emitUID = id;
             socket.emit('registerInfo', id);
             socket.on(id, (rcv) => {
                 io.emit("r" + id, rcv);
@@ -58,6 +60,9 @@ io.on('connection', (socket) => {
         if (user.has(uid)){
             user.delete(uid);
             io.emit('rmWhiteList', uid);
+        }
+        if (emitUID != null){
+            availableID.push(emitUID);
         }
         console.log('user disconnected');
     });

@@ -53,7 +53,7 @@ class inference():
         self.__white_list[info['uid']] = info['stamp']
         
     def __clientLeave(self, uid):
-        if not isinstance(self.__white_list.get(uid, None), None):
+        if not isinstance(self.__white_list.get(uid, None), type(None)):
             self.__white_list.pop(uid)
         
     def run(self):
@@ -97,7 +97,7 @@ def sock():
 def client():
     os.system("python signalInput.py -n")
             
-def main():
+def main2():
     arg = args()
     socketioServer = Process(target = sock)
     client1 = Process(target = client)
@@ -116,6 +116,11 @@ def main():
         socketioServer.join()
         client1.join()
         client2.join()
+        
+def main():
+    arg = args()
+    emdCNN = inference(config.SERVER_URL, arg.model)
+    emdCNN.run()
 
 if __name__ == '__main__':
     main()
