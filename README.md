@@ -1,5 +1,7 @@
 # MAX-Tongue-repo
-### Prerequisite
+### Prerequisite [Local inference server]
+#### CUDA & cuDNN
+CUDA = 11.7, cuDNN = 8.2.1
 #### Python
 This project is developed in Python 3.10.7.
 <br>
@@ -13,7 +15,7 @@ as the instructions in https://socket.io/get-started/chat.
 <br> `npm install socket.io`
 <br>
 ### Usage
-*Open socketIO server with
+* Open socketIO server with
 <br> `node index.js` <br>
-*Run inference.py for inference request, check config.
+* Run inference.py for inference request, check config.py for some settings.
 <br> `python inference.py` <br>
