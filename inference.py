@@ -52,7 +52,8 @@ class inference():
         self.__white_list[info['uid']] = info['stamp']
         
     def __clientLeave(self, uid):
-        self.__white_list.pop(uid)
+        if not isinstance(self.__white_list.get(uid, None), None):
+            self.__white_list.pop(uid)
         
     def run(self):
         os.system('cls')
