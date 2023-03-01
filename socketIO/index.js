@@ -3,10 +3,12 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
 
+let ip = '192.168.1.37';
 let ID_LEN = 6;
 let user = new Map();
+let availableID = [];
 let startUp = Date.now() / 1000;
-let inference_cooldown = 10; //ms
+let inference_cooldown = 50; //ms
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
@@ -20,12 +22,26 @@ io.on('connection', (socket) => {
         io.emit('chat message', msg);
     });
 
-    socket.on('register', (data) => {
-        let id = make_id(data);
-        user.set(id, data)
+    socket.on('register', (info) => {
+        let id = make_id(info['time']);
+        user.set(id, info['time'])
         uid = id;
-        socket.emit('registerSuccessful', id);
-        io.emit('whiteList', {'uid': id, 'stamp': data});
+        availableID.push(id);
+        socket.emit('registerInfo', id);
+        io.emit('whiteList', {'uid': id, 'stamp': info['time']});
+    });
+
+    socket.on('signalRegister', () => {
+        if (availableID.length > 0){
+            id = availableID.pop();
+            socket.emit('registerInfo', id);
+            socket.on(id, (rcv) => {
+                io.emit("r" + id, rcv);
+            });
+        }
+        else{
+            socket.emit('registerInfo', 'No client available.');
+        }
     });
 
     socket.on('inferenceRequest', (req) => {
@@ -47,8 +63,8 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(port, () => {
-    console.log(`Socket.IO server running at http://localhost:${port}/`);
+http.listen(port, ip, () => {
+    console.log(`Socket.IO server running at http://${ip}:${port}/`);
 });
 
 function make_id(data){

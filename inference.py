@@ -5,8 +5,9 @@ import os
 import numpy as np
 import tensorflow as tf
 from threading import Lock
-from time import time
+from time import time, sleep
 from copy import deepcopy
+from multiprocessing import Process
 from tensorflow.keras.backend import clear_session
 tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
@@ -89,11 +90,32 @@ class inference():
             os.system('cls')
             self.__sio.disconnect()
             clear_session()
-
+            
+def sock():
+    os.system("node socketIO\index.js")
+    
+def client():
+    os.system("python signalInput.py -n")
+            
 def main():
     arg = args()
+    socketioServer = Process(target = sock)
+    client1 = Process(target = client)
+    client2 = Process(target = client)
+    
+    socketioServer.start()
+    sleep(2) # wait for socket IO server set up.
     emdCNN = inference(config.SERVER_URL, arg.model)
-    emdCNN.run()
+    client1.start()
+    client2.start()
+    try:
+        emdCNN.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        socketioServer.join()
+        client1.join()
+        client2.join()
 
 if __name__ == '__main__':
     main()

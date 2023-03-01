@@ -4,7 +4,7 @@ CHANNEL_NUMBER = 3
 WINDOW_SIZE = 100
 SAMPLE_RATE = 500 #Hz
 KEY_CLASS = {0:'undefined action', 1:'up', 2:'down', 3:'left', 4:'right', 5:'quick touch'}
-SERVER_URL = 'http://localhost:3000'
+SERVER_URL = 'http://maxtongue.ddns.net:3000'
 
 # [inference]
 REQ_RECEIVE_CHANNEL = 'inference'
@@ -16,4 +16,4 @@ BELIEF_THRESHOLD = 0.9
 # [signal]
 BAUD_RATE = 115200
 REQUEST_CHANNEL = "inferenceRequest"
-REQUEST_COOLDOWN = 0.08 #second
+REQUEST_COOLDOWN = 0.06 #second

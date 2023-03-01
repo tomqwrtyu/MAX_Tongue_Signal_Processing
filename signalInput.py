@@ -16,12 +16,16 @@ def args():
         '-p', '--port', type=str, default='COM3',
         help=('Port to arduino usb connection.'))
     parser.add_argument(
-        '-n', '--noarduino', action='store_true',
+        '-f', '--fakeSignal', action='store_true',
         help=('Raise this flag to use fake signal.') 
+    )
+    parser.add_argument(
+        '-r', '--remoteMode', action='store_true',
+        help=('Raise this flag to wait for signal through Wi-Fi.') 
     )
     return parser.parse_args()
 
-class reciever():
+class receiver():
     def __init__(self, url, port, baud_rate, record = None) -> None: 
         if isinstance(record, loader):
             self.__serial = record
@@ -31,8 +35,8 @@ class reciever():
         self.__clientID = ''
         self.__sio = socketio.Client()
         self.__sio.connect(url)
-        self.__sio.on('registerSuccessful', self.__getID)
-        self.__sio.emit('register', "{:.3f}".format(time()))
+        self.__sio.on('registerInfo', self.__getID)
+        self.__sio.emit('register', {'time': "{:.3f}".format(time()), 'remote': False})
 
         self.__container = deque([], maxlen=config.WINDOW_SIZE)
         try:
@@ -99,6 +103,75 @@ class reciever():
               
         return ",".join(ret[np.newaxis, :].astype(np.str_).flatten().tolist())
     
+class remoteReceiver():
+    def __init__(self, url) -> None: 
+        self.__clientID = ''
+        self.__sio = socketio.Client()
+        self.__sio.connect(url)
+        self.__sio.on('registerInfo', self.__getID)
+        self.__sio.emit('register', {'time': "{:.3f}".format(time()), 'remote': True})
+
+        sleep(1)
+        self.__container = deque([], maxlen=config.WINDOW_SIZE)
+        try:
+            assert isinstance(self.__sio, socketio.Client)
+            print("Connected to Socket server with ID: {}.".format(self.__clientID))
+        except:
+            raise Exception("Maybe server is not online.")
+        
+    def __getID(self, id):
+        self.__clientID = id
+        self.__sio.on('r' + id, self.__getData)
+    
+    def __getData(self, rcv):
+        print(rcv)
+        try:
+            self.__container.append(rcv.split(','))
+        except:
+            pass
+        
+    def __emdSignal(self, sig):
+        sig = np.array(sig).astype(np.float32).reshape(config.CHANNEL_NUMBER, config.WINDOW_SIZE).T
+        ret = None
+    
+        for c in range(config.CHANNEL_NUMBER):
+            raw = sig[:, c]
+            imf = sift(raw, max_imfs=config.NUM_IMF, imf_opts={'sd_thresh': 0.1})
+            
+            if imf.shape[-1] < config.NUM_IMF:
+                compensate = np.zeros((config.WINDOW_SIZE, config.NUM_IMF - imf.shape[-1]))
+                imf = np.concatenate([imf, compensate], axis = 1)
+            
+            if not type(ret) == np.ndarray: 
+                ret = imf
+            else: 
+                ret = np.concatenate([ret, imf], axis = 1)
+              
+        return ",".join(ret[np.newaxis, :].astype(np.str_).flatten().tolist())
+        
+    def run(self):
+        try:
+            escape = False
+            stamp = time()
+            count = 0
+            while not escape:
+                try:
+                    if len(self.__container) == config.WINDOW_SIZE and time() > (stamp + config.REQUEST_COOLDOWN):
+                        stamp = time()
+                        count += 1
+                        self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
+                        print("ID: {} send {: 5d}.".format(self.__clientID, count).ljust(22), end='\r')
+                        
+                except KeyboardInterrupt:
+                    escape = True
+                    break
+                except:
+                    pass
+        
+        except KeyboardInterrupt:
+            self.__sio.disconnect()
+            print('Serial disconnected.'.ljust(22))
+    
 class loader():
     def __init__(self, path) -> None:
         self.data = np.load(path)
@@ -123,11 +196,13 @@ class loader():
 
 def main():
     arg = args()
-    if arg.noarduino:
-        arduino = reciever(config.SERVER_URL, arg.port, config.BAUD_RATE, loader(record_path))
+    if arg.fakeSignal:
+        signal = receiver(config.SERVER_URL, arg.port, config.BAUD_RATE, loader(record_path))
+    elif arg.remoteMode:
+        signal = remoteReceiver(config.SERVER_URL)
     else:
-        arduino = reciever(config.SERVER_URL, arg.port, config.BAUD_RATE)
-    arduino.run()
+        signal = receiver(config.SERVER_URL, arg.port, config.BAUD_RATE)
+    signal.run()
 
 if __name__ == '__main__':
     main()
