@@ -41,6 +41,7 @@ class inference():
         self.__white_list = {}
         self.__req = {'uid': None, 'data': None}
         
+        self.__sio.emit('inferenceRegister')
         self.__sio.on('whiteList', self.__newClient)
         self.__sio.on('rmWhiteList', self.__clientLeave)
         

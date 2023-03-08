@@ -16,4 +16,4 @@ BELIEF_THRESHOLD = 0.9
 # [signal]
 BAUD_RATE = 115200
 REQUEST_CHANNEL = "inferenceRequest"
-REQUEST_COOLDOWN = 0.04 #second
+REQUEST_COOLDOWN = 0.06 #second

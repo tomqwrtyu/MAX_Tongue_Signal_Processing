@@ -111,7 +111,7 @@ class remoteReceiver():
         self.__sio.on('registerInfo', self.__getID)
         self.__sio.emit('register', {'time': "{:.3f}".format(time()), 'remote': True})
 
-        sleep(1)
+        sleep(0.5)
         self.__container = deque([], maxlen=config.WINDOW_SIZE)
         try:
             assert isinstance(self.__sio, socketio.Client)
@@ -125,7 +125,9 @@ class remoteReceiver():
     
     def __getData(self, rcv):
         try:
-            self.__container.append(rcv.split(','))
+            rcv_split = rcv.split(',')
+            if len(rcv_split) == config.CHANNEL_NUMBER:
+                self.__container.append(rcv_split)
         except:
             pass
         
