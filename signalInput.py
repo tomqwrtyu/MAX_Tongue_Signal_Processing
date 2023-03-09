@@ -2,6 +2,7 @@ import argparse
 import config
 import serial
 import socketio
+import socket
 import numpy as np
 from collections import deque
 from emd.sift import sift
@@ -36,7 +37,7 @@ class receiver():
         self.__sio = socketio.Client()
         self.__sio.connect(url)
         self.__sio.on('registerInfo', self.__getID)
-        self.__sio.emit('register', {'time': "{:.3f}".format(time()), 'remote': False})
+        self.__sio.emit('signalHandlerRegister', {'time': "{:.3f}".format(time()), 'remote': False, 'localIP': socket.gethostbyname(socket.gethostname())})
 
         self.__container = deque([], maxlen=config.WINDOW_SIZE)
         try:
@@ -109,7 +110,7 @@ class remoteReceiver():
         self.__sio = socketio.Client()
         self.__sio.connect(url)
         self.__sio.on('registerInfo', self.__getID)
-        self.__sio.emit('register', {'time': "{:.3f}".format(time()), 'remote': True})
+        self.__sio.emit('signalHandlerRegister', {'time': "{:.3f}".format(time()), 'remote': True, 'localIP': socket.gethostbyname(socket.gethostname())})
 
         sleep(0.5)
         self.__container = deque([], maxlen=config.WINDOW_SIZE)

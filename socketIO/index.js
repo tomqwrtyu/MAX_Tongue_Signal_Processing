@@ -6,9 +6,9 @@ const port = process.env.PORT || 3000;
 let ip = '192.168.1.37';
 let ID_LEN = 6;
 let signalHandler = new Map();
-let availableID = [];
+let availableHandler = [];
+let availableSignal = [];
 let startUp = Date.now() / 1000;
-let inference_cooldown = 50; //ms
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
@@ -23,19 +23,21 @@ io.on('connection', (socket) => {
         io.emit('chat message', msg);
     });
 
-    socket.on('register', (info) => {
-        let id = make_id(info['time']);
-        signalHandler.set(id, info['time'])
-        uid = id;
-        availableID.push(id);
-        socket.join(id);
-        socket.emit('registerInfo', id);
-        io.to('inferenceNode').emit('whiteList', {'uid': id, 'stamp': info['time']});
+    socket.on('inferenceRegister', () => {
+        socket.join('inferenceNode');
+        socket.on('inferenceResult', (res) => {
+            io.to('players').emit(res.uid + '_action', res.action); // need to be specified
+        });
     });
 
-    socket.on('signalRegister', () => {
-        if (availableID.length > 0){
-            id = availableID.pop();
+    socket.on('playerRegister', () => {
+        socket.join('players');
+    });
+
+    socket.on('remoteSignalRegister', () => { //ISSUE: how to connect with specific player?
+        if (availableHandler.length > 0){
+            id = availableHandler.pop();
+            availableSignal.push(id);
             emitUID = id;
             socket.emit('registerInfo', id);
             socket.on(id, (rcv) => {
@@ -47,22 +49,23 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('inferenceRegister', () => {
-        socket.join('inferenceNode');
-    });
-
-    socket.on('inferenceRequest', (req) => {
-        if (signalHandler.has(req.uid)){
-            io.to('inferenceNode').emit('inference', req);
-        }
-    });
-
-    socket.on('inferenceResult', (res) => {
-        io.emit('chat message', res.uid + ',' + res.action); // need to be spcified
+    socket.on('signalHandlerRegister', (info) => {
+        let id = info['localIP'];
+        signalHandler.set(id, info['time']);
+        uid = id;
+        availableHandler.push(id);
+        socket.join(id);
+        socket.emit('registerInfo', id);
+        io.to('inferenceNode').emit('whiteList', {'uid': id, 'stamp': info['time']});
+        socket.on('inferenceRequest', (req) => {
+            if (availableHandler.has(req.uid)){
+                io.to('inferenceNode').emit('inference', req);
+            }
+        });
     });
 
     socket.on('disconnect', () => {
-        if (signalHandler.has(uid)){
+        if (uid != null && signalHandler.has(uid)){
             signalHandler.delete(uid);
             io.to('inferenceNode').emit('rmWhiteList', uid);
         }

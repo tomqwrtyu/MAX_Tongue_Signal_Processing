@@ -59,8 +59,8 @@ class inference():
         
     def run(self):
         os.system('cls')
-        print("Listening requests.")
         self.__sio.on(config.REQ_RECEIVE_CHANNEL, self.__receiveSignal)
+        print("Listening requests.")
         try:
             while True:
                 clock = time()
