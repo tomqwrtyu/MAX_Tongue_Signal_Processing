@@ -17,8 +17,8 @@ def args():
     desc = (':3')
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '-m', '--model', type=str, default='LickingPark0222',
-        help=('Model name in model/.'))
+        '-m', '--model', type=str, default='LickingPark0309v3',
+        help=('Model name in ./model .'))
     return parser.parse_args()
 
 class inference():
@@ -76,7 +76,7 @@ class inference():
                     
                     candidateIdx = np.argmax(res) + 1 if res[np.argmax(res)] > config.BELIEF_THRESHOLD else 0
                     self.__sio.emit(config.RESULT_CHANNEL, {'uid': clientID, 'action': config.KEY_CLASS[candidateIdx]})
-                    print("ID: {}-{: 5d}, Spend time: {:.3f}s, Act: {}".format(clientID, ser, time() - clock, config.KEY_CLASS[candidateIdx]).ljust(MAXCHARLEN + config.ID_LEN + 37), end='\r')
+                    print("ID: {}-{: 5d}, Spend time: {:.3f}s, Act: {}".format(clientID, ser, time() - clock, config.KEY_CLASS[candidateIdx]).ljust(MAXCHARLEN + len(clientID) + 37), end='\r')
                 
                 except KeyboardInterrupt:
                     break
@@ -96,7 +96,7 @@ def sock():
     os.system("node socketIO\index.js")
     
 def client():
-    os.system("python signalInput.py -n")
+    os.system("python signalInput.py -f")
             
 def main2():
     arg = args()

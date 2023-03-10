@@ -67,23 +67,20 @@ class receiver():
                             stamp = time()
                             count += 1
                             self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
-                            print("ID: {} send {: 5d}.".format(self.__clientID, count).ljust(22), end='\r')
+                            print("ID: {} send {: 5d}.".format(self.__clientID, count).ljust((len(self.__clientID) + 17)), end='\r')
                             
                     except KeyboardInterrupt:
                         escape = True
                         break
                     except:
                         pass
-                    finally:
-                        if isinstance(self.__serial, loader):
-                            sleep(1 / config.SAMPLE_RATE)
                             
             raise KeyboardInterrupt
 
         except KeyboardInterrupt:
             self.__serial.close() 
             self.__sio.disconnect()
-            print('Serial disconnected.'.ljust(22))
+            print('Serial disconnected.'.ljust((len(self.__clientID) + 17)))
             
     def __emdSignal(self, sig):
         sig = np.array(sig).astype(np.float32).reshape(config.CHANNEL_NUMBER, config.WINDOW_SIZE).T
@@ -162,7 +159,7 @@ class remoteReceiver():
                         stamp = time()
                         count += 1
                         self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
-                        print("ID: {} send {: 5d}.".format(self.__clientID, count).ljust(22), end='\r')
+                        print("ID: {} send {: 6d}.".format(self.__clientID, count).ljust(len(self.__clientID) + 17), end='\r')
                         self.__container.popleft()
                         
                 except KeyboardInterrupt:
@@ -173,7 +170,7 @@ class remoteReceiver():
         
         except KeyboardInterrupt:
             self.__sio.disconnect()
-            print('Serial disconnected.'.ljust(22))
+            print('Serial disconnected.'.ljust((len(self.__clientID) + 17)))
     
 class loader():
     def __init__(self, path) -> None:

@@ -1,6 +1,6 @@
 const app = require('express')();
 const http = require('http').Server(app);
-const io = require('socket.io', {transports: ['websocket']})(http);
+const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
 
 let ip = '192.168.1.37';
@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected', socket.id);
+    console.log('a user connected, Online user count:', Object.keys(io.sockets.sockets).length);
     let uid = null;
     let emitUID = null;
 
@@ -26,6 +26,7 @@ io.on('connection', (socket) => {
     socket.on('inferenceRegister', () => {
         socket.join('inferenceNode');
         socket.on('inferenceResult', (res) => {
+            io.emit("chat message", res.uid + ": " + res.action);
             io.to('players').emit(res.uid + '_action', res.action); // need to be specified
         });
     });
@@ -58,7 +59,7 @@ io.on('connection', (socket) => {
         socket.emit('registerInfo', id);
         io.to('inferenceNode').emit('whiteList', {'uid': id, 'stamp': info['time']});
         socket.on('inferenceRequest', (req) => {
-            if (availableHandler.has(req.uid)){
+            if (signalHandler.has(req.uid)){
                 io.to('inferenceNode').emit('inference', req);
             }
         });
@@ -72,7 +73,7 @@ io.on('connection', (socket) => {
         if (emitUID != null && signalHandler.has(emitUID)){
             availableID.push(emitUID);
         }
-        console.log('user disconnected', socket.id);
+        console.log('user disconnected, Online user count:', Object.keys(io.sockets.sockets).length);
     });
 });
 
