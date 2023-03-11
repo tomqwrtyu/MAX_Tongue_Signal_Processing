@@ -12,7 +12,7 @@ Make sure NodeJS(https://nodejs.org/en/) is downloaded and install express, sock
 as the instructions in https://socket.io/get-started/chat. 
 <br>
 <br> `npm install express@4`
-<br> `npm install socket.io`
+<br> `npm install socket.io@2.5.0`
 <br>
 ### Usage
 * Open socketIO server with
