@@ -34,15 +34,21 @@ class receiver():
             self.__serial = serial.Serial(port, baud_rate)
             
         self.__clientID = ''
-        self.__sio = socketio.Client()
-        self.__sio.connect(url)
-        self.__sio.on('registerInfo', self.__getID)
-        self.__sio.emit('signalHandlerRegister', {'time': "{:.3f}".format(time()), 'remote': False, 'localIP': socket.gethostbyname(socket.gethostname())})
+        self.__serverUrl = url
+        self.__sio = None
+        self.__initializeSocketIOClient()
 
         self.__container = deque([], maxlen=config.WINDOW_SIZE)
+        
+    def __initializeSocketIOClient(self):
+        self.__sio = socketio.Client(reconnection=False)
+        self.__sio.connect(self.__serverUrl)
+        self.__sio.on('registerInfo', self.__getID)
+        self.__sio.emit('signalHandlerRegister', {'time': "{:.3f}".format(time()), 'remote': True, 'localIP': socket.gethostbyname(socket.gethostname())})
+        sleep(0.1)
         try:
             assert isinstance(self.__sio, socketio.Client)
-            print("Connected to Socket server.")
+            print("Connected to Socket server with ID: {}.".format(self.__clientID))
         except:
             raise Exception("Maybe server is not online.")
         
@@ -63,11 +69,12 @@ class receiver():
                             continue
                         self.__container.append(rcv.split(',')) # a0,b0,c0, a1,b1,c1 .... an,bn,cn, <-- tackle this with rstrip() and 
                                                      # reshape with (WINDOW_SIZE, CHANNEL_SIZE) and then transpose -> (CHANNEL_SIZE, WINDOW_SIZE)
+                        
                         if len(self.__container) == config.WINDOW_SIZE and time() > (stamp + config.REQUEST_COOLDOWN):
                             stamp = time()
                             count += 1
                             self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
-                            print("ID: {} send {: 5d}.".format(self.__clientID, count).ljust((len(self.__clientID) + 17)), end='\r')
+                            print("ID: {} send {}.".format(self.__clientID, count).ljust((len(self.__clientID) + int(np.log10(count)) + 11)), end='\r')
                             
                     except KeyboardInterrupt:
                         escape = True
@@ -80,7 +87,7 @@ class receiver():
         except KeyboardInterrupt:
             self.__serial.close() 
             self.__sio.disconnect()
-            print('Serial disconnected.'.ljust((len(self.__clientID) + 17)))
+            print('Serial disconnected.'.ljust((len(self.__clientID) + int(np.log10(count)) + 12)))
             
     def __emdSignal(self, sig):
         sig = np.array(sig).astype(np.float32).reshape(config.CHANNEL_NUMBER, config.WINDOW_SIZE).T
@@ -104,13 +111,18 @@ class receiver():
 class remoteReceiver():
     def __init__(self, url) -> None: 
         self.__clientID = ''
+        self.__serverUrl = url
+        self.__sio = None
+        self.__initializeSocketIOClient()
+
+        self.__container = deque([], maxlen=config.WINDOW_SIZE)
+        
+    def __initializeSocketIOClient(self):
         self.__sio = socketio.Client()
-        self.__sio.connect(url)
+        self.__sio.connect(self.__serverUrl)
         self.__sio.on('registerInfo', self.__getID)
         self.__sio.emit('signalHandlerRegister', {'time': "{:.3f}".format(time()), 'remote': True, 'localIP': socket.gethostbyname(socket.gethostname())})
-
-        sleep(0.5)
-        self.__container = deque([], maxlen=config.WINDOW_SIZE)
+        sleep(0.1)
         try:
             assert isinstance(self.__sio, socketio.Client)
             print("Connected to Socket server with ID: {}.".format(self.__clientID))
@@ -159,7 +171,7 @@ class remoteReceiver():
                         stamp = time()
                         count += 1
                         self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
-                        print("ID: {} send {: 6d}.".format(self.__clientID, count).ljust(len(self.__clientID) + 17), end='\r')
+                        print("ID: {} send {}.".format(self.__clientID, count).ljust((len(self.__clientID) + int(np.log10(count)) + 11)), end='\r')
                         self.__container.popleft()
                         
                 except KeyboardInterrupt:
@@ -170,7 +182,7 @@ class remoteReceiver():
         
         except KeyboardInterrupt:
             self.__sio.disconnect()
-            print('Serial disconnected.'.ljust((len(self.__clientID) + 17)))
+            print('Serial disconnected.'.ljust((len(self.__clientID) + int(np.log10(count)) + 12)))
     
 class loader():
     def __init__(self, path) -> None:
