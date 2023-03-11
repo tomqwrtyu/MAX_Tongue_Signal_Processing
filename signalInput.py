@@ -74,7 +74,8 @@ class receiver():
                             stamp = time()
                             count += 1
                             self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
-                            print("ID: {} send {}.".format(self.__clientID, count).ljust((len(self.__clientID) + int(np.log10(count)) + 11)), end='\r')
+                            print("ID: {} send {}.".format(self.__clientID, count))
+                            config.clear_line()
                             
                     except KeyboardInterrupt:
                         escape = True

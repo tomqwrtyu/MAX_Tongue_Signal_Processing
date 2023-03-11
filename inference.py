@@ -2,7 +2,6 @@ import argparse
 import config
 import socketio
 import os
-import gc
 import numpy as np
 import tensorflow as tf
 from threading import Lock
@@ -12,14 +11,8 @@ from multiprocessing import Process
 tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
 MAXCHARLEN = max([len(config.KEY_CLASS[key]) for key in config.KEY_CLASS])
-LINE_UP = '\033[1A'
-LINE_CLEAR = '\x1b[2K'
 
-def clear_line(n=1):
-    LINE_UP = '\033[1A'
-    LINE_CLEAR = '\x1b[2K'
-    for _ in range(n):
-        print(LINE_UP, end=LINE_CLEAR)
+
 
 def args():
     desc = (':3')
@@ -117,7 +110,7 @@ class inference():
                                 inferenceResult += '\n'
 
                         print(inferenceResult)
-                        clear_line(self.__clientCount)
+                        config.clear_line(self.__clientCount)
                 
                 except KeyboardInterrupt:
                     break

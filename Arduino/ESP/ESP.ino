@@ -104,7 +104,7 @@ void loop() {
     socketIO.loop(); 
 
     if((registerSend < maxSendRegister) && (millis() - sendTime > resendTime)) {
-        String reg = "\[\"signalRegister\",\"\"]";
+        String reg = "\[\"remoteSignalRegister\",\"\"]";
         socketIO.sendEVENT(reg);
         sendTime = millis();
         registerSend++;
