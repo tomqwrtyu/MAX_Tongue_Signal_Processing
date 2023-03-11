@@ -9,7 +9,6 @@ from threading import Lock
 from time import time, sleep
 from copy import deepcopy
 from multiprocessing import Process
-from tensorflow.keras.backend import clear_session
 tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
 MAXCHARLEN = max([len(config.KEY_CLASS[key]) for key in config.KEY_CLASS])
@@ -119,9 +118,6 @@ class inference():
 
                         print(inferenceResult)
                         clear_line(self.__clientCount)
-                            
-                    # print("ID: {}-{}, Spend time: {:.3f}s, Act: {}".format(clientID, ser, time() - clock, \
-                    #       config.KEY_CLASS[candidateIdx]).ljust(MAXCHARLEN + len(clientID) + int(np.log10(ser)) + 36), end='\r')
                 
                 except KeyboardInterrupt:
                     break
@@ -135,7 +131,6 @@ class inference():
         finally:
             os.system('cls')
             self.__sio.disconnect()
-            clear_session()
             
 def sock():
     os.system("node socketIO\index.js")
