@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('[', Date(Date.now()).toString(), '] a user connected, Online user count:', Object.keys(io.sockets.sockets).length);
+    console.log('[', Date(Date.now()).toString(), '] user ' + socket.id + ' connected, Online user count:', Object.keys(io.sockets.sockets).length);
     let uid = null;
     let emitUID = null;
 
@@ -31,8 +31,9 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('playerRegister', () => {
+    socket.on('eventHandlerRegister', () => {
         socket.join('players');
+        console.log("Players joined the room.");
     });
 
     socket.on('remoteSignalRegister', () => { //ISSUE: how to connect with specific player?
@@ -51,8 +52,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('signalHandlerRegister', (info) => {
-        let id = make_id(info['time']);
-        // let id = info['localIP'];
+        // let id = make_id(info['time']);
+        let id = info['localIP'];
         signalHandler.set(id, info['time']);
         uid = id;
         availableHandler.push(id);

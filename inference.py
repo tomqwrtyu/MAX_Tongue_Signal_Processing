@@ -12,13 +12,11 @@ tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
 MAXCHARLEN = max([len(config.KEY_CLASS[key]) for key in config.KEY_CLASS])
 
-
-
 def args():
     desc = (':3')
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '-m', '--model', type=str, default='LickingPark0309v3',
+        '-m', '--model', type=str, default='MTJaw0314',
         help=('Model name in ./model .'))
     parser.add_argument(
         '-v', '--verbose', action='store_true',
@@ -30,7 +28,6 @@ class inference():
         # connect to socketIO server
         self.__serverUrl = url
         self.__sio = None
-        self.__initializeSocketIOClient()
         
         # load model
         self.__model = tf.keras.models.load_model('./model/' + modelName)
@@ -43,6 +40,7 @@ class inference():
         self.__lastInferenceRecord = {}
         self.__req = {'uid': None, 'data': None}
         self.verbose = verbose
+        self.__initializeSocketIOClient()
         
         
     def __initializeSocketIOClient(self):
