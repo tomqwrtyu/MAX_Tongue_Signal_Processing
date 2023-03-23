@@ -31,9 +31,9 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('playerRegister', () => {
+    socket.on('eventHandlerRegister', () => {
         socket.join('players');
-        console.log("Player: " + socket.id + " joined the room.");
+        console.log("Players joined the room.");
     });
 
     socket.on('remoteSignalRegister', () => { //ISSUE: how to connect with specific player?
