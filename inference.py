@@ -16,7 +16,7 @@ def args():
     desc = (':3')
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '-m', '--model', type=str, default='MTJaw0314',
+        '-m', '--model', type=str, default='MTJaw0326',
         help=('Model name in ./model .'))
     parser.add_argument(
         '-v', '--verbose', action='store_true',
@@ -92,6 +92,7 @@ class inference():
                     res = self.__model(data[np.newaxis, :]).numpy().flatten()
                     
                     candidateIdx = np.argmax(res) + 1 if res[np.argmax(res)] > config.BELIEF_THRESHOLD else 0
+                    candidateIdx = candidateIdx if candidateIdx in config.ACCEPT_CLASS else config.UNKNOWN_CLASS
                     self.__sio.emit(config.RESULT_CHANNEL, {'uid': clientID, 'action': config.KEY_CLASS[candidateIdx]})
                     self.__lastInferenceRecord[clientID]['serial_num'] = ser
                     self.__lastInferenceRecord[clientID]['used_time'] = time() - clock

@@ -8,7 +8,7 @@ from collections import deque
 from emd.sift import sift
 from time import sleep, time
 
-record_path = './data/2023_Mar_14_170710_l5m6r7_record_X.npy'
+record_path = './data/2023_Mar_21_182116_l5m6r7_record_X.npy'
 
 def args():
     desc = (':3')
