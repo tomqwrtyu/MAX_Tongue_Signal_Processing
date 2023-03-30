@@ -16,7 +16,7 @@ def args():
     desc = (':3')
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '-m', '--model', type=str, default='MTJaw0326',
+        '-m', '--model', type=str, default='MTJaw0330',
         help=('Model name in ./model .'))
     parser.add_argument(
         '-v', '--verbose', action='store_true',

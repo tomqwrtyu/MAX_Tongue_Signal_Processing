@@ -10,7 +10,7 @@ CHANNEL_NUMBER = 3
 WINDOW_SIZE = 100
 SAMPLE_RATE = 500 #Hz
 KEY_CLASS = {0:'undefined action', 1:'up', 2:'down', 3:'left', 4:'right', 5:'quick touch'}
-SERVER_URL = 'http://192.168.1.75:3000'
+SERVER_URL = 'http://192.168.0.123:3000'
 
 # [inference]
 REQ_RECEIVE_CHANNEL = 'inference'

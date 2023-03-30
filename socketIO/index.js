@@ -3,7 +3,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
 
-let ip = '192.168.1.75';
+let ip = '192.168.0.123';
 let ID_LEN = 6;
 let signalHandler = new Map();
 let availableHandler = [];
