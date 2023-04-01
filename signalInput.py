@@ -73,7 +73,10 @@ class receiver():
                         if len(self.__container) == config.WINDOW_SIZE and time() > (stamp + config.REQUEST_COOLDOWN):
                             stamp = time()
                             count += 1
-                            self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
+                            # self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
+                            self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID,
+                                                                     'data': ",".join(np.array(self.__container).flatten().tolist()),
+                                                                     'serial_num': count})
                             print("ID: {} send {}.".format(self.__clientID, count))
                             config.clear_line()
                             
@@ -91,7 +94,7 @@ class receiver():
             print('Serial disconnected.'.ljust((len(self.__clientID) + int(np.log10(count)) + 12)))
             
     def __emdSignal(self, sig):
-        sig = np.array(sig).astype(np.float32).reshape(config.CHANNEL_NUMBER, config.WINDOW_SIZE).T
+        sig = np.array(sig).astype(np.float16).reshape(config.WINDOW_SIZE, config.CHANNEL_SIZE).T
         ret = None
     
         for c in range(config.CHANNEL_NUMBER):
