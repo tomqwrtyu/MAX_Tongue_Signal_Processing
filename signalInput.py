@@ -94,7 +94,7 @@ class receiver():
             print('Serial disconnected.'.ljust((len(self.__clientID) + int(np.log10(count)) + 12)))
             
     def __emdSignal(self, sig):
-        sig = np.array(sig).astype(np.float16).reshape(config.WINDOW_SIZE, config.CHANNEL_SIZE).T
+        sig = np.array(sig).astype(np.float16).reshape(config.WINDOW_SIZE, config.CHANNEL_NUMBER).T
         ret = None
     
         for c in range(config.CHANNEL_NUMBER):

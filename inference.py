@@ -91,7 +91,7 @@ class inference():
                 
                 try:
                     clientID = self.__req['uid']
-                    data = np.array(self.__req['data'].split(",")).astype(np.float16).T.reshape(config.CHANNEL_NUMBER, config.WINDOW_SIZE, 1)
+                    data = np.array(self.__req['data'].split(",")).astype(np.float16).reshape(config.WINDOW_SIZE, config.CHANNEL_NUMBER).T
                     ser = self.__req['serial_num']
                     
                     self.__req.clear()

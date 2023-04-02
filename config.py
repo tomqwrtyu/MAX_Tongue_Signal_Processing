@@ -10,7 +10,7 @@ CHANNEL_NUMBER = 3
 WINDOW_SIZE = 250
 SAMPLE_RATE = 500 #Hz
 KEY_CLASS = {0:'undefined action', 1:'up', 2:'down', 3:'left', 4:'right', 5:'quick touch'}
-SERVER_URL = 'http://192.168.50.65:3000'
+SERVER_URL = 'http://192.168.0.77:3000'
 
 # [inference]
 REQ_RECEIVE_CHANNEL = 'inference'
@@ -22,5 +22,5 @@ UNKNOWN_CLASS = 0
 # [signal]
 BAUD_RATE = 115200
 REQUEST_CHANNEL = "inferenceRequest"
-REQUEST_COOLDOWN = 0.05 #second
+REQUEST_COOLDOWN = 0.04 #second
 
