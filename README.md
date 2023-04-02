@@ -13,6 +13,7 @@ as the instructions in https://socket.io/get-started/chat.
 <br>
 <br> `npm install express@4`
 <br> `npm install socket.io@2.5.0`
+<br> `npm install local-ip-address`
 <br>
 ### Usage
 * Open socketIO server with
