@@ -17,11 +17,14 @@ def args():
     desc = (':3')
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '-m', '--model', type=str, default='MTJaw0401_300',
+        '-m', '--model', type=str, default='MTJaw0402_250_W250_T8639',
         help=('Model name in ./model .'))
     parser.add_argument(
+        '-b', '--belief_threshold', type=float, default=0.8639,
+        help=('A threshold to determine what value of output is going to be accepted.'))
+    parser.add_argument(
         '-v', '--verbose', action='store_true',
-        help=('Model name in ./model .'))
+        help=('Show the inference result and request ID.'))
     return parser.parse_args()
 
 class inference():
@@ -95,7 +98,7 @@ class inference():
                     assert self.__white_list.get(clientID, False), "Client {} not in whitelist.".format(clientID)
                     res = self.__model(data[np.newaxis, :]).numpy().flatten()
                     
-                    candidateIdx = np.argmax(res) + 1 if res[np.argmax(res)] > config.BELIEF_THRESHOLD else 0
+                    candidateIdx = np.argmax(res) + 1 if res[np.argmax(res)] > BELIEF_THRESHOLD else 0
                     candidateIdx = candidateIdx if candidateIdx in config.ACCEPT_CLASS else config.UNKNOWN_CLASS
                     self.__sio.emit(config.RESULT_CHANNEL, {'uid': clientID, 'action': config.KEY_CLASS[candidateIdx]})
                     self.__lastInferenceRecord[clientID]['serial_num'] = ser
@@ -153,9 +156,13 @@ def main2():
         socketioServer.join()
         client1.join()
         client2.join()
-        
+
+BELIEF_THRESHOLD = 0   
+
 def main():
     arg = args()
+    global BELIEF_THRESHOLD 
+    BELIEF_THRESHOLD = arg.belief_threshold
     emdCNN = inference(config.SERVER_URL, arg.model, arg.verbose)
     emdCNN.run()
 

@@ -4,6 +4,7 @@
   "description": "socket with Arduino, python and Unreal Engine 5",
   "dependencies": {
     "express": "^4.18.2",
+    "local-ip-address": "^1.0.0",
     "socket.io": "^2.5.0"
   }
 }

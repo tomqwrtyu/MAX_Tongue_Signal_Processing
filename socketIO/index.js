@@ -2,8 +2,9 @@ const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
+const localIP = require("local-ip-address");
 
-let ip = '192.168.0.123';
+let ip = localIP();//'192.168.0.77';
 let ID_LEN = 6;
 let signalHandler = new Map();
 let availableHandler = [];
