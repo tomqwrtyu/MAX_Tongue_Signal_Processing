@@ -8,6 +8,7 @@ from threading import Lock
 from time import time, sleep
 from copy import deepcopy
 from multiprocessing import Process
+from model_architecture import ConTradiction_model
 tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
 MAXCHARLEN = max([len(config.KEY_CLASS[key]) for key in config.KEY_CLASS])
@@ -16,7 +17,7 @@ def args():
     desc = (':3')
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '-m', '--model', type=str, default='MTJaw0330',
+        '-m', '--model', type=str, default='MTJaw0401_300',
         help=('Model name in ./model .'))
     parser.add_argument(
         '-v', '--verbose', action='store_true',
@@ -29,10 +30,13 @@ class inference():
         self.__serverUrl = url
         self.__sio = None
         
-        # load model
-        self.__model = tf.keras.models.load_model('./model/' + modelName)
+        try:
+            self.__model = tf.keras.models.load_model('./model/' + modelName)
+        except:
+            self.__model = ConTradiction_model((config.CHANNEL_NUMBER, config.WINDOW_SIZE, 1))
+            self.__model.load_weights('./model/' + modelName + '/')
         # initialize predictor
-        self.__model(np.zeros((1, config.WINDOW_SIZE, config.CHANNEL_NUMBER * config.NUM_IMF)))
+        self.__model(np.zeros((1, config.CHANNEL_NUMBER, config.WINDOW_SIZE, 1)))
         
         self.__lock = Lock()
         self.__white_list = {}
@@ -84,7 +88,7 @@ class inference():
                 
                 try:
                     clientID = self.__req['uid']
-                    data = np.array(self.__req['data'].split(",")).astype(np.float32).reshape(config.WINDOW_SIZE, config.CHANNEL_NUMBER * config.NUM_IMF)
+                    data = np.array(self.__req['data'].split(",")).astype(np.float16).T.reshape(config.CHANNEL_NUMBER, config.WINDOW_SIZE, 1)
                     ser = self.__req['serial_num']
                     
                     self.__req.clear()

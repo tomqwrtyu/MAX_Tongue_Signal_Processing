@@ -7,7 +7,7 @@ def clear_line(n=1):
 
 NUM_IMF = 3
 CHANNEL_NUMBER = 3
-WINDOW_SIZE = 100
+WINDOW_SIZE = 200
 SAMPLE_RATE = 500 #Hz
 KEY_CLASS = {0:'undefined action', 1:'up', 2:'down', 3:'left', 4:'right', 5:'quick touch'}
 SERVER_URL = 'http://192.168.0.123:3000'
@@ -18,7 +18,7 @@ RESULT_CHANNEL = 'inferenceResult'
 CLASS_NUMBER = 5
 ACCEPT_CLASS = [3, 4]
 UNKNOWN_CLASS = 0
-BELIEF_THRESHOLD = 0.6
+BELIEF_THRESHOLD = 0.7659234
 
 # [signal]
 BAUD_RATE = 115200
