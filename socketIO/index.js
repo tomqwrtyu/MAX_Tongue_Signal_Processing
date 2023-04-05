@@ -2,9 +2,26 @@ const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
-const localIP = require("local-ip-address");
+const { networkInterfaces } = require('os');
 
-let ip = localIP();//'192.168.0.77';
+const nets = networkInterfaces();
+const ipv4_addr = {};
+
+for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+        // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+        // 'IPv4' is in Node <= 17, from 18 it's a number 4 or 6
+        const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
+        if (net.family === familyV4Value && !net.internal) {
+            if (!ipv4_addr[name]) {
+                ipv4_addr[name] = [];
+            }
+            ipv4_addr[name].push(net.address);
+        }
+    }
+}
+
+let ip = ipv4_addr['Wi-Fi'];
 let ID_LEN = 6;
 let signalHandler = new Map();
 let availableHandler = [];
