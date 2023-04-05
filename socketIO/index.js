@@ -21,7 +21,11 @@ for (const name of Object.keys(nets)) {
     }
 }
 
-let ip = ipv4_addr['Wi-Fi'];
+let ip = "127.0.0.1";
+if (ipv4_addr['Wi-Fi']){
+    ip = ipv4_addr['Wi-Fi'];
+}
+    
 let ID_LEN = 6;
 let signalHandler = new Map();
 let availableHandler = [];
