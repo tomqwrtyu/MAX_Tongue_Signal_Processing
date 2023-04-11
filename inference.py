@@ -17,10 +17,10 @@ def args():
     desc = (':3')
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '-m', '--model', type=str, default='MTJaw0404_700_W200_T8799',
+        '-m', '--model', type=str, default='MTJaw0411_500_W200_T9809',
         help=('Model name in ./model .'))
     parser.add_argument(
-        '-b', '--belief_threshold', type=float, default=0.8799,
+        '-b', '--belief_threshold', type=float, default=0.9809,
         help=('A threshold to determine what value of output is going to be accepted.'))
     parser.add_argument(
         '-v', '--verbose', action='store_true',

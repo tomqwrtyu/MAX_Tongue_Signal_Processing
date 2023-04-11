@@ -43,6 +43,9 @@ void setup() {
     filterA.init(sampleRate, humFreq, true, true, true);
     filterB.init(sampleRate, humFreq, true, true, true);
     filterC.init(sampleRate, humFreq, true, true, true);
+    pinMode(SensorInputPinA, INPUT_PULLUP);
+    pinMode(SensorInputPinB, INPUT_PULLUP);
+    pinMode(SensorInputPinC, INPUT_PULLUP);
     analogReference(EXTERNAL);
 
     // open serial
