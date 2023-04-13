@@ -17,10 +17,10 @@ def args():
     desc = (':3')
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '-m', '--model', type=str, default='MTJaw0411_500_W200_T9809',
+        '-m', '--model', type=str, default='ATJaw0411_500_W200_T9809',
         help=('Model name in ./model .'))
     parser.add_argument(
-        '-b', '--belief_threshold', type=float, default=0.9809,
+        '-t', '--threshold', type=float, default=0.9809,
         help=('A threshold to determine what value of output is going to be accepted.'))
     parser.add_argument(
         '-v', '--verbose', action='store_true',
@@ -51,7 +51,7 @@ class inference():
         
         
     def __initializeSocketIOClient(self):
-        self.__sio = socketio.Client(reconnection=False)
+        self.__sio = socketio.Client()
         self.__sio.connect(self.__serverUrl)
         self.__sio.emit('inferenceRegister')
         self.__sio.on('whiteList', self.__newClient)
@@ -140,29 +140,23 @@ def client():
 def main2():
     arg = args()
     socketioServer = Process(target = sock)
-    client1 = Process(target = client)
-    client2 = Process(target = client)
     
     socketioServer.start()
     sleep(2) # wait for socket IO server set up.
     emdCNN = inference(config.SERVER_URL, arg.model, arg.verbose)
-    client1.start()
-    client2.start()
     try:
         emdCNN.run()
     except KeyboardInterrupt:
         pass
     finally:
         socketioServer.join()
-        client1.join()
-        client2.join()
 
 BELIEF_THRESHOLD = 0   
 
 def main():
     arg = args()
     global BELIEF_THRESHOLD 
-    BELIEF_THRESHOLD = arg.belief_threshold
+    BELIEF_THRESHOLD = arg.threshold
     emdCNN = inference(config.SERVER_URL, arg.model, arg.verbose)
     emdCNN.run()
 

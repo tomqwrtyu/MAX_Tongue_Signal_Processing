@@ -41,7 +41,7 @@ class receiver():
         self.__container = deque([], maxlen=config.WINDOW_SIZE)
         
     def __initializeSocketIOClient(self):
-        self.__sio = socketio.Client(reconnection=False)
+        self.__sio = socketio.Client()
         self.__sio.connect(self.__serverUrl)
         self.__sio.on('registerInfo', self.__getID)
         self.__sio.emit('signalHandlerRegister', {'time': "{:.3f}".format(time()), 'remote': True, 'localIP': socket.gethostbyname(socket.gethostname())})

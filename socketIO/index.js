@@ -40,42 +40,46 @@ io.on('connection', (socket) => {
     console.log('[', Date(Date.now()).toString(), '] user ' + socket.id + ' connected, Online user count:', Object.keys(io.sockets.sockets).length);
     let uid = null;
     let emitUID = null;
+    let user_type = null;
 
     socket.on('chat message', (msg) => {
         io.emit('chat message', msg);
     });
 
     socket.on('inferenceRegister', () => {
+        user_type = 'inference_server';
         socket.join('inferenceNode');
         socket.on('inferenceResult', (res) => {
             io.emit("chat message", res.uid + ": " + res.action);
-            io.to('players').emit(res.uid + '_action', res.action); // need to be specified
+            io.to('players').emit(res.uid + '_action', res.action);
         });
     });
 
     socket.on('eventHandlerRegister', () => {
+        user_type = 'unity_event_handler';
         socket.join('players');
         console.log("Players joined the room.");
     });
 
-    socket.on('remoteSignalRegister', () => { //ISSUE: how to connect with specific player?
-        if (availableHandler.length > 0){
-            id = availableHandler.pop();
-            availableSignal.push(id);
-            emitUID = id;
-            socket.emit('registerInfo', id);
-            socket.on(id, (rcv) => {
-                io.to(id).emit("r" + id, rcv);
-            });
-        }
-        else{
-            socket.emit('registerInfo', 'No client available.');
-        }
-    });
+    // socket.on('remoteSignalRegister', () => { //ISSUE: how to connect with specific player?
+    //     if (availableHandler.length > 0){
+    //         id = availableHandler.pop();
+    //         availableSignal.push(id);
+    //         emitUID = id;
+    //         socket.emit('registerInfo', id);
+    //         socket.on(id, (rcv) => {
+    //             io.to(id).emit("r" + id, rcv);
+    //         });
+    //     }
+    //     else{
+    //         socket.emit('registerInfo', 'No client available.');
+    //     }
+    // });
 
     socket.on('signalHandlerRegister', (info) => {
         // let id = make_id(info['time']);
         let id = info['localIP'];
+        user_type = 'signal_handler';
         signalHandler.set(id, info['time']);
         uid = id;
         availableHandler.push(id);
@@ -87,6 +91,32 @@ io.on('connection', (socket) => {
                 io.to('inferenceNode').emit('inference', req);
             }
         });
+    });
+
+    socket.on('reconnect', () =>{
+        console.log(user_type + "reconnected.");
+        switch(user_type){
+            case 'inference_server':
+                socket.join('inferenceNode');
+                socket.on('inferenceResult', (res) => {
+                    io.emit("chat message", res.uid + ": " + res.action);
+                    io.to('players').emit(res.uid + '_action', res.action);
+                });
+                break;
+            case 'unity_event_handler':
+                socket.join('players');
+                break;
+            case 'signal_handler':
+                socket.join(id);
+                socket.on('inferenceRequest', (req) => {
+                    if (signalHandler.has(req.uid)){
+                        io.to('inferenceNode').emit('inference', req);
+                    }
+                });
+                break;
+            default:
+                socket.disconnect();
+        }
     });
 
     socket.on('disconnect', () => {
