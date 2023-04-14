@@ -67,7 +67,11 @@ class receiver():
                     try:
                         if len(rcv.split(',')) < config.CHANNEL_NUMBER:
                             continue
-                        self.__container.append(rcv.split(',')) # a0,b0,c0, a1,b1,c1 .... an,bn,cn, <-- tackle this with rstrip() and 
+                        if config.REDUCED_CHANNEL:
+                            data = rcv.split(',')
+                            self.__container.append([data[0], data[2]])
+                        else:
+                            self.__container.append(rcv.split(',')) # a0,b0,c0, a1,b1,c1 .... an,bn,cn, <-- tackle this with rstrip() and 
                                                      # reshape with (WINDOW_SIZE, CHANNEL_SIZE) and then transpose -> (CHANNEL_SIZE, WINDOW_SIZE)
                         
                         if len(self.__container) == config.WINDOW_SIZE and time() > (stamp + config.REQUEST_COOLDOWN):
@@ -142,6 +146,7 @@ class remoteReceiver():
             rcv_split = rcv.split(',')
             if len(rcv_split) == config.CHANNEL_NUMBER:
                 self.__container.append(rcv_split)
+
         except:
             pass
         
