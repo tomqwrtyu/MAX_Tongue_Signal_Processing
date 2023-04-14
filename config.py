@@ -6,7 +6,8 @@ def clear_line(n=1):
         print(LINE_UP, end=LINE_CLEAR)
 
 NUM_IMF = 3
-CHANNEL_NUMBER = 2
+CHANNEL_NUMBER = 3
+REDUCED_CHANNEL = False
 WINDOW_SIZE = 200
 SAMPLE_RATE = 500 #Hz
 KEY_CLASS = {0:'undefined action', 1:'up', 2:'down', 3:'left', 4:'right', 5:'quick touch'}
@@ -17,7 +18,6 @@ SERVER_URL = 'http://192.168.176.65:3000/'
 REQ_RECEIVE_CHANNEL = 'inference'
 RESULT_CHANNEL = 'inferenceResult'
 CLASS_NUMBER = 5
-REDUCED_CHANNEL = True
 ACCEPT_CLASS = [3, 4]
 UNKNOWN_CLASS = 0
 
