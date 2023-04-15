@@ -29,7 +29,7 @@ if (ipv4_addr['Wi-Fi']){
 let ID_LEN = 6;
 let signalHandler = new Map();
 let availableHandler = [];
-let availableSignal = [];
+// let availableSignal = [];
 let startUp = Date.now() / 1000;
 
 app.get('/', (req, res) => {
@@ -53,12 +53,13 @@ io.on('connection', (socket) => {
             io.emit("chat message", res.uid + ": " + res.action);
             io.to('players').emit(res.uid + '_action', res.action);
         });
+        console.log("Inference server is online.");
     });
 
     socket.on('eventHandlerRegister', () => {
         user_type = 'unity_event_handler';
         socket.join('players');
-        console.log("Players joined the room.");
+        console.log("A player joined the room.");
     });
 
     // socket.on('remoteSignalRegister', () => { //ISSUE: how to connect with specific player?
@@ -91,6 +92,7 @@ io.on('connection', (socket) => {
                 io.to('inferenceNode').emit('inference', req);
             }
         });
+        console.log( signalHandler.size + " signal handler is available.");
     });
 
     socket.on('reconnect', () =>{
@@ -127,7 +129,7 @@ io.on('connection', (socket) => {
         if (emitUID != null && signalHandler.has(emitUID)){
             availableID.push(emitUID);
         }
-        console.log('[', Date(Date.now()).toString(), '] a user disconnected, Online user count:', Object.keys(io.sockets.sockets).length);
+        console.log('[', Date(Date.now()).toString(), '] ' + user_type + ' disconnected, Online user count:', Object.keys(io.sockets.sockets).length);
     });
 });
 

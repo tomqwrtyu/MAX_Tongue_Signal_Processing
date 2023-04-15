@@ -51,7 +51,7 @@ class inference():
         
         
     def __initializeSocketIOClient(self):
-        self.__sio = socketio.Client()
+        self.__sio = socketio.Client(reconnection=False)
         self.__sio.connect(self.__serverUrl)
         self.__sio.emit('inferenceRegister')
         self.__sio.on('whiteList', self.__newClient)
@@ -78,9 +78,12 @@ class inference():
     def __clientLeave(self, uid):
         if not isinstance(self.__white_list.get(uid, None), type(None)):
             self.__white_list.pop(uid)
-            self.__lastInferenceRecord.pop(uid)
+            abandon_data = self.__lastInferenceRecord.pop(uid)
             self.__clientCount -= 1
-        
+            if self.__clientCount == 0:
+                print(' ' * (33 + len(uid) + int(np.log10(1 + abandon_data['serial_num'] + abandon_data['used_time'])) + MAXCHARLEN))
+                config.clear_line()
+
     def run(self):
         os.system('cls')
         self.__sio.on(config.REQ_RECEIVE_CHANNEL, self.__receiveSignal)
@@ -90,11 +93,14 @@ class inference():
                 clock = time()
                 
                 try:
-                    clientID = self.__req['uid']
-                    data = np.array(self.__req['data'].split(",")).astype(np.float16).reshape(config.WINDOW_SIZE, config.CHANNEL_NUMBER).T
-                    ser = self.__req['serial_num']
-                    
-                    self.__req.clear()
+                    if self.__req:
+                        clientID = self.__req['uid']
+                        data = np.array(self.__req['data'].split(",")).astype(np.float16).reshape(config.WINDOW_SIZE, config.CHANNEL_NUMBER).T
+                        ser = self.__req['serial_num']
+                        self.__req.clear()
+                    else:
+                        continue
+
                     assert self.__white_list.get(clientID, False), "Client {} not in whitelist.".format(clientID)
                     res = self.__model(data[np.newaxis, :]).numpy().flatten()
                     

@@ -41,7 +41,7 @@ class receiver():
         self.__container = deque([], maxlen=config.WINDOW_SIZE)
         
     def __initializeSocketIOClient(self):
-        self.__sio = socketio.Client()
+        self.__sio = socketio.Client(reconnection=False)
         self.__sio.connect(self.__serverUrl)
         self.__sio.on('registerInfo', self.__getID)
         self.__sio.emit('signalHandlerRegister', {'time': "{:.3f}".format(time()), 'remote': True, 'localIP': socket.gethostbyname(socket.gethostname())})
@@ -79,7 +79,7 @@ class receiver():
                             count += 1
                             # self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID, 'data': self.__emdSignal(self.__container), 'serial_num': count})
                             self.__sio.emit(config.REQUEST_CHANNEL, {'uid': self.__clientID,
-                                                                     'data': ",".join(np.array(self.__container).flatten().tolist()),
+                                                                     'data': ",".join(np.array(self.__container, dtype=object).flatten().tolist()),
                                                                      'serial_num': count})
                             print("ID: {} send {}.".format(self.__clientID, count))
                             config.clear_line()
@@ -95,7 +95,7 @@ class receiver():
         except KeyboardInterrupt:
             self.__serial.close() 
             self.__sio.disconnect()
-            print('Serial disconnected.'.ljust((len(self.__clientID) + int(np.log10(count)) + 12)))
+            print('Serial disconnected.'.ljust((len(self.__clientID) + int(np.log10(count + 1)) + 12)))
             
     def __emdSignal(self, sig):
         sig = np.array(sig).astype(np.float16).reshape(config.WINDOW_SIZE, config.CHANNEL_NUMBER).T
@@ -126,7 +126,7 @@ class remoteReceiver():
         self.__container = deque([], maxlen=config.WINDOW_SIZE)
         
     def __initializeSocketIOClient(self):
-        self.__sio = socketio.Client()
+        self.__sio = socketio.Client(reconnection=False)
         self.__sio.connect(self.__serverUrl)
         self.__sio.on('registerInfo', self.__getID)
         self.__sio.emit('signalHandlerRegister', {'time': "{:.3f}".format(time()), 'remote': True, 'localIP': socket.gethostbyname(socket.gethostname())})
