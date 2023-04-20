@@ -24,9 +24,9 @@ Inspired by label smoothing, we assigned random value to label with "undefined a
 beacuse we want model to learn whether the signal is a defined class or just a noise but assigning all zero value will result in <br>
 gradient vanishing. Also, we think it is reasonable to assign those values since signals by human muscles have some similarity, <br>
 differences are maybe caused by muscle strength or sensor detaching (however, we found interesting is that only "appropriate" value <br>
-can prevnt gradient vanishing) <br>
+can prevnt gradient vanishing). <br>
 ### Problem
-Reversing left and right channel could not reverse the inference result, maybe result from not adding a positional encoding on "channel" <br>
-but only on time series? <br>
+Reversing left and right channel on the fly could not reverse the inference result, maybe result from not adding a positional encoding <br>
+on "channel" but only on time series? <br>
 ### Reference
 Model Architecture: ConTraNet - https://arxiv.org/abs/2206.10677 (kernel size and component layers are modified)
