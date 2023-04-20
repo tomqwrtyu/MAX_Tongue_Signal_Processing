@@ -13,10 +13,19 @@ as the instructions in https://socket.io/get-started/chat.
 <br>
 <br> `npm install express@4`
 <br> `npm install socket.io@2.5.0`
-<br> `npm install local-ip-address`
 <br>
 ### Usage
 * Open socketIO server with
 <br> `node index.js` <br>
 * Run inference.py for inference request, check config.py for some settings.
 <br> `python inference.py` <br>
+### Experimental concept
+     Inspired by label smoothing, we assigned random value to label with "undefined action" which is usually assiged with [0] * #class <br>
+<br> beacuse we want model to learn whether the signal is a defined class or just a noise while assigning all zero value will result in <br>
+<br> gradient vanishing and we think it is reasonable to assign those values since signals by human muscles have some similarity, <br>
+<br> differences are maybe caused by muscle strength or sensor detaching (however, only "appropriate" value can prevnt gradient vanishing) <br>
+### Problem
+     Reversing left and right channel could not reverse the inference result, maybe result from not adding a positional encoding on "channel" <br>
+<br> but only on time series? <br>
+### Reference
+Model Architecture: ConTraNet - https://arxiv.org/abs/2206.10677 (kernel size and component layers are modified)
