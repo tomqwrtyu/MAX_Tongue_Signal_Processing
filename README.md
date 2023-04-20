@@ -22,7 +22,7 @@ as the instructions in https://socket.io/get-started/chat.
 ### Experimental concept
 Inspired by label smoothing, we assigned random value to label with "undefined action" which is usually assiged with [0] * #class <br>
 beacuse we want model to learn whether the signal is a defined class or just a noise while assigning all zero value will result in <br>
-gradient vanishing and we think it is reasonable to assign those values since signals by human muscles have some similarity, <br>
+gradient vanishing. Also, we think it is reasonable to assign those values since signals by human muscles have some similarity, <br>
 differences are maybe caused by muscle strength or sensor detaching (however, only "appropriate" value can prevnt gradient vanishing) <br>
 ### Problem
 Reversing left and right channel could not reverse the inference result, maybe result from not adding a positional encoding on "channel" <br>
