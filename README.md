@@ -20,10 +20,10 @@ as the instructions in https://socket.io/get-started/chat.
 * Run inference.py for inference request, check config.py for some settings.
 <br> `python inference.py` <br>
 ### Experimental concept
-Inspired by label smoothing, we assigned random value to label with "undefined action" which is usually assiged with [0] * #class <br>
-beacuse we want model to learn whether the signal is a defined class or just a noise but assigning all zero value will result in <br>
-gradient vanishing. Also, we think it is reasonable to assign those values since signals by human muscles have some similarity, <br>
-differences could be caused by muscle strength or sensor detaching (however, we found interesting is that only "appropriate" value <br>
+Inspired by label smoothing, we assigned random value to label with "undefined action" which is usually assiged with [0] * #class 
+beacuse we want model to learn whether the signal is a defined class or just a noise but assigning all zero value will result in 
+gradient vanishing. Also, we think it is reasonable to assign those values since signals by human muscles have some similarity, 
+differences could be caused by muscle strength or sensor detaching (however, we found interesting is that only "appropriate" value 
 can prevnt gradient vanishing). <br>
 ### Problem
 Reversing left and right channel on the fly could not reverse the inference result, a possible reason is that positional encoding is not implemented on channel but only on time series? <br>
